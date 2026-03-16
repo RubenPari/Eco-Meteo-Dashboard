@@ -17,13 +17,13 @@
         <MudIconButton Icon="@(_isDarkMode ? Icons.Material.Filled.LightMode : Icons.Material.Filled.DarkMode)" 
                       OnClick="ToggleDarkMode" 
                       Color="Color.Inherit" 
-                      Title="Toggle theme" />
+                      title="Toggle theme" />
     </MudAppBar>
     <MudDrawer Open="true" ClipMode="DrawerClipMode.Always" Elevation="2">
         <NavMenu />
     </MudDrawer>
     <MudMainContent>
-        <MudContainer Fluid="true" Class="pa-0">
+        <MudContainer fluid="true" Class="pa-0">
             @Body
         </MudContainer>
     </MudMainContent>

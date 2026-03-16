@@ -169,7 +169,6 @@
     private bool _showAqiLayer;
     private bool _showTempLayer;
     private bool _showPrecipLayer;
-    private bool _isLoading;
     private IJSObjectReference? _mapModule;
     private DotNetObjectReference<Home>? _dotNetHelper;
 
@@ -212,7 +211,6 @@
 
     private async Task LoadLocationData(double lat, double lng)
     {
-        _isLoading = true;
         try
         {
             var weatherTask = WeatherService.GetCurrentWeatherAsync(lat, lng);
@@ -246,7 +244,7 @@
         }
         finally
         {
-            _isLoading = false;
+            // Loading complete
         }
     }
 
