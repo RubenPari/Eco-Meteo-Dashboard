@@ -1,0 +1,42 @@
+Analisi dei Requisiti: Eco-Meteo Dashboard
+Questo documento definisce le specifiche per una piattaforma web interattiva che fornisce dati in tempo reale su condizioni meteorologiche e qualità dell'aria (AQI) a livello globale.
+1. Visione del Progetto
+L'obiettivo è creare uno strumento intuitivo che permetta agli utenti di monitorare non solo il tempo atmosferico, ma anche l'impatto ambientale (inquinamento) nella propria zona o in qualsiasi parte del mondo, visualizzando i dati su una mappa dinamica.
+2. Requisiti Funzionali
+2.1 Mappa Interattiva (Core)
+* Visualizzazione Geografica: Una mappa a tutto schermo (OpenStreetMap o Mapbox) come sfondo principale.
+* Layer Dati: Possibilità di attivare/disattivare layer specifici:
+   * Precipitazioni (Radar).
+   * Temperatura (Heatmap).
+   * Qualità dell'aria (Marker colorati in base all'indice AQI).
+* Interazione: Cliccando su un punto della mappa o su un sensore, appare un popup con i dettagli completi.
+2.2 Ricerca e Geolocalizzazione
+* Barra di Ricerca: Autocompletamento delle città tramite API (Geocoding).
+* Localizzami: Pulsante per centrare la mappa sulla posizione attuale dell'utente tramite GPS/IP.
+* Preferiti: Possibilità di salvare città specifiche per un accesso rapido (memorizzate in LocalStorage).
+2.3 Visualizzazione Dati (Dettaglio)
+Per ogni località selezionata, il sistema deve mostrare:
+* Meteo: Temperatura attuale, percepita, umidità, velocità/direzione del vento e icone animate.
+* Inquinamento:
+   * Indice AQI (Air Quality Index) con scala colori (Verde = Buona, Rosso = Pericolosa).
+   * Concentrazione di inquinanti specifici: PM2.5, PM10,   ,   ,   ,   .
+   * Previsioni: Timeline delle prossime 24 ore e dei prossimi 7 giorni.
+2.4 Grafici Storici (Opzionale/Avanzato)
+   * Visualizzazione dell'andamento della temperatura o dell'inquinamento nelle ultime 24 ore tramite grafici a linee.
+3. Fonti Dati e API Consigliate
+Dato
+	Provider Consigliato
+	Note
+	Meteo & Forecast
+	OpenWeatherMap
+	Molto documentata, piano free generoso.
+	Qualità dell'Aria
+	IQAir (AirVisual)
+	Leader mondiale per i dati AQI.
+	Mappe
+	Leaflet.js o Mapbox
+	Leaflet è open source e leggero.
+	Geocoding
+	Nominatim (OSM)
+	Gratuito per tradurre nomi di città in coordinate.
+	
