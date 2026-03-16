@@ -1,23 +1,57 @@
 using Eco_Meteo_Dashboard.Components;
+using Eco_Meteo_Dashboard.Data;
+using Eco_Meteo_Dashboard.Services;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using MudBlazor;
+using MudBlazor.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
+builder.Services.AddMudServices();
+
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddHttpClient<IOpenWeatherMapService, OpenWeatherMapService>(client =>
+{
+    client.BaseAddress = new Uri("https://api.openweathermap.org/");
+});
+
+builder.Services.AddHttpClient<IAirQualityService, AirQualityService>(client =>
+{
+    client.BaseAddress = new Uri("https://api.iqair.com/");
+});
+
+builder.Services.AddHttpClient<IGeocodingService, GeocodingService>(client =>
+{
+    client.DefaultRequestHeaders.Add("User-Agent", "Eco-Meteo-Dashboard");
+});
+
+builder.Services.AddScoped<IFavoriteService, FavoriteService>();
+
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+using (var scope = app.Services.CreateScope())
+{
+    var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    context.Database.EnsureCreated();
+}
+
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error", createScopeForErrors: true);
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
-app.UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages: true);
-app.UseHttpsRedirection();
 
+app.UseStatusCodePagesWithReExecute("/not-found");
+app.UseHttpsRedirection();
 app.UseAntiforgery();
 
 app.MapStaticAssets();
