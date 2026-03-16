@@ -1,0 +1,63 @@
+@page "/about"
+
+<PageTitle>Info - Eco-Meteo</PageTitle>
+
+<MudText Typo="Typo.h4" Class="mb-4">Informazioni</MudText>
+
+<MudPaper Class="pa-4" Elevation="2">
+    <MudText Typo="Typo.h5" Class="mb-3">Eco-Meteo Dashboard</MudText>
+    <MudText Typo="Typo.body1" Class="mb-4">
+        Una piattaforma web interattiva che fornisce dati in tempo reale su condizioni meteorologiche 
+        e qualità dell'aria (AQI) a livello globale.
+    </MudText>
+
+    <MudDivider Class="my-4" />
+
+    <MudText Typo="Typo.h6" Class="mb-2">Fonti Dati</MudText>
+    <MudSimpleTable Dense="true">
+        <thead>
+            <tr>
+                <th>Servizio</th>
+                <th>Tipo Dati</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>OpenWeatherMap</td>
+                <td>Meteo e previsioni</td>
+            </tr>
+            <tr>
+                <td>IQAir</td>
+                <td>Qualità dell'aria (AQI)</td>
+            </tr>
+            <tr>
+                <td>OpenStreetMap (Nominatim)</td>
+                <td>Geocoding</td>
+            </tr>
+        </tbody>
+    </MudSimpleTable>
+
+    <MudDivider Class="my-4" />
+
+    <MudText Typo="Typo.h6" Class="mb-2">Tecnologie</MudText>
+    <MudStack Row="true" Spacing="1">
+        <MudChip T="string" Color="Color.Primary">Blazor</MudChip>
+        <MudChip T="string" Color="Color.Primary">.NET 9</MudChip>
+        <MudChip T="string" Color="Color.Primary">MudBlazor</MudChip>
+        <MudChip T="string" Color="Color.Primary">Leaflet.js</MudChip>
+        <MudChip T="string" Color="Color.Primary">EF Core</MudChip>
+        <MudChip T="string" Color="Color.Primary">SQL Server</MudChip>
+    </MudStack>
+
+    <MudDivider Class="my-4" />
+
+    <MudAlert Severity="Severity.Info">
+        <MudText Typo="Typo.body2">
+            <b>Nota:</b> Per utilizzare l'applicazione, configura le API keys in 
+            <code>appsettings.json</code>. Ottieni le chiavi da 
+            <MudLink Href="https://openweathermap.org/api" Target="_blank">OpenWeatherMap</MudLink> 
+            e 
+            <MudLink Href="https://www.iqair.com/api" Target="_blank">IQAir</MudLink>.
+        </MudText>
+    </MudAlert>
+</MudPaper>

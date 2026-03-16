@@ -1,0 +1,85 @@
+@page "/favorites"
+
+<PageTitle>Preferiti - Eco-Meteo</PageTitle>
+
+<MudText Typo="Typo.h4" Class="mb-4">Località Preferite</MudText>
+
+@if (_favorites.Count == 0)
+{
+    <MudPaper Class="pa-8" Elevation="2" Style="text-align: center;">
+        <MudIcon Icon="@Icons.Material.Filled.FavoriteBorder" Style="font-size: 64px; color: #ccc;" />
+        <MudText Typo="Typo.h6" Class="mt-4">Nessun preferito salvato</MudText>
+        <MudText Typo="Typo.body2" Class="text-muted">Cerca una località e salvala nei preferiti</MudText>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" Href="/" Class="mt-4">
+            Vai alla mappa
+        </MudButton>
+    </MudPaper>
+}
+else
+{
+    <MudGrid>
+        @foreach (var favorite in _favorites)
+        {
+            <MudItem xs="12" sm="6" md="4">
+                <MudCard Elevation="2">
+                    <MudCardContent>
+                        <MudText Typo="Typo.h6">@favorite.Name</MudText>
+                        <MudText Typo="Typo.caption" Class="text-muted">
+                            @favorite.Country @(favorite.State != null ? $", {favorite.State}" : "")
+                        </MudText>
+                        <MudText Typo="Typo.body2" Class="mt-2">
+                            Lat: @favorite.Latitude.ToString("F4"), Lon: @favorite.Longitude.ToString("F4")
+                        </MudText>
+                    </MudCardContent>
+                    <MudCardActions>
+                        <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="() => ViewOnMap(favorite)">
+                            Visualizza
+                        </MudButton>
+                        <MudSpacer />
+                        <MudIconButton Icon="@Icons.Material.Filled.Delete" 
+                                      Color="Color.Error" 
+                                      OnClick="() => RemoveFavorite(favorite.Id)" />
+                    </MudCardActions>
+                </MudCard>
+            </MudItem>
+        }
+    </MudGrid>
+}
+
+@code {
+    private List<FavoriteLocation> _favorites = [];
+
+    [Inject]
+    private IFavoriteService FavoriteService { get; set; } = null!;
+
+    [Inject]
+    private NavigationManager Navigation { get; set; } = null!;
+
+    [Inject]
+    private ISnackbar Snackbar { get; set; } = null!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadFavorites();
+    }
+
+    private async Task LoadFavorites()
+    {
+        _favorites = await FavoriteService.GetAllAsync();
+    }
+
+    private void ViewOnMap(FavoriteLocation favorite)
+    {
+        Navigation.NavigateTo($"/?lat={favorite.Latitude}&lon={favorite.Longitude}");
+    }
+
+    private async Task RemoveFavorite(int id)
+    {
+        var result = await FavoriteService.RemoveAsync(id);
+        if (result)
+        {
+            Snackbar.Add("Preferito rimosso", Severity.Success);
+            await LoadFavorites();
+        }
+    }
+}

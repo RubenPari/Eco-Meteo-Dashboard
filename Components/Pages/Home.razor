@@ -1,7 +1,336 @@
-﻿@page "/"
+@page "/"
 
-<PageTitle>Home</PageTitle>
+<PageTitle>Eco-Meteo Dashboard</PageTitle>
 
-<h1>Hello, world!</h1>
+<MudGrid>
+    <MudItem xs="12" md="3">
+        <MudPaper Class="pa-4" Elevation="2">
+            <MudText Typo="Typo.h6" Class="mb-3">Cerca località</MudText>
+            <MudAutocomplete T="Location" Label="Città" @bind-Value="_selectedLocation" 
+                           SearchFunc="SearchCities" 
+                           ToStringFunc="LocationToString"
+                           ResetValueOnEmptyText="true"
+                           Adornment="Adornment.Start" 
+                           AdornmentIcon="@Icons.Material.Filled.Search"
+                           Margin="Margin.Dense" />
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" 
+                      FullWidth="true" Class="mt-2"
+                      OnClick="LocateMe" StartIcon="@Icons.Material.Filled.MyLocation">
+                Localizzami
+            </MudButton>
+        </MudPaper>
 
-Welcome to your new app.
+        <MudPaper Class="pa-4 mt-4" Elevation="2">
+            <MudText Typo="Typo.h6" Class="mb-3">Layer Mappa</MudText>
+            <MudSwitch @bind-Value="_showAqiLayer" Label="Qualità Aria" Color="Color.Success" />
+            <MudSwitch @bind-Value="_showTempLayer" Label="Temperatura" Color="Color.Warning" />
+            <MudSwitch @bind-Value="_showPrecipLayer" Label="Precipitazioni" Color="Color.Info" />
+        </MudPaper>
+
+        @if (_selectedLocation != null)
+        {
+            <MudPaper Class="pa-4 mt-4" Elevation="2">
+                <MudText Typo="Typo.h6" Class="mb-3">@_selectedLocation.Name</MudText>
+                <MudText Typo="Typo.body2" Class="text-muted">@_selectedLocation.Country</MudText>
+                <MudButton Variant="Variant.Outlined" Color="Color.Primary" 
+                          FullWidth="true" Class="mt-2"
+                          OnClick="AddToFavorites" StartIcon="@Icons.Material.Filled.FavoriteBorder">
+                    Salva nei preferiti
+                </MudButton>
+            </MudPaper>
+        }
+    </MudItem>
+
+    <MudItem xs="12" md="9">
+        <MudPaper Class="pa-0" Elevation="2" Style="height: 600px;">
+            <div id="@_mapElementId" style="width: 100%; height: 100%;"></div>
+        </MudPaper>
+    </MudItem>
+
+    @if (_weatherData != null || _airQualityData != null)
+    {
+        <MudItem xs="12">
+            <MudGrid>
+                @if (_weatherData != null)
+                {
+                    <MudItem xs="12" md="6">
+                        <MudPaper Class="pa-4" Elevation="2">
+                            <MudText Typo="Typo.h6" Class="mb-3">
+                                <MudIcon Icon="@Icons.Material.Filled.WbSunny" Class="mr-2" />
+                                Meteo Attuale
+                            </MudText>
+                            <MudSimpleTable Dense="true">
+                                <tbody>
+                                    <tr>
+                                        <td>Temperatura</td>
+                                        <td><MudChip T="string" Color="Color.Warning">@_weatherData.Temperature.ToString("F1")°C</MudChip></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Percepita</td>
+                                        <td>@_weatherData.FeelsLike.ToString("F1")°C</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Umidità</td>
+                                        <td>@_weatherData.Humidity%</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Vento</td>
+                                        <td>@_weatherData.WindSpeed.ToString("F1") m/s</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Pressione</td>
+                                        <td>@_weatherData.Pressure hPa</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Descrizione</td>
+                                        <td>@_weatherData.Description</td>
+                                    </tr>
+                                </tbody>
+                            </MudSimpleTable>
+                        </MudPaper>
+                    </MudItem>
+                }
+
+                @if (_airQualityData != null)
+                {
+                    <MudItem xs="12" md="6">
+                        <MudPaper Class="pa-4" Elevation="2">
+                            <MudText Typo="Typo.h6" Class="mb-3">
+                                <MudIcon Icon="@Icons.Material.Filled.Air" Class="mr-2" />
+                                Qualità dell'Aria
+                            </MudText>
+                            <MudAlert Severity="@GetAqiSeverity(_airQualityData.Aqi)" Class="mb-3">
+                                AQI: @_airQualityData.Aqi - @_airQualityData.Category
+                            </MudAlert>
+                            <MudSimpleTable Dense="true">
+                                <tbody>
+                                    <tr>
+                                        <td>PM2.5</td>
+                                        <td>@_airQualityData.PM25.ToString("F1") μg/m³</td>
+                                    </tr>
+                                    <tr>
+                                        <td>PM10</td>
+                                        <td>@_airQualityData.PM10.ToString("F1") μg/m³</td>
+                                    </tr>
+                                    <tr>
+                                        <td>NO₂</td>
+                                        <td>@_airQualityData.NO2.ToString("F1") μg/m³</td>
+                                    </tr>
+                                    <tr>
+                                        <td>O₃</td>
+                                        <td>@_airQualityData.O3.ToString("F1") μg/m³</td>
+                                    </tr>
+                                    <tr>
+                                        <td>SO₂</td>
+                                        <td>@_airQualityData.SO2.ToString("F1") μg/m³</td>
+                                    </tr>
+                                    <tr>
+                                        <td>CO</td>
+                                        <td>@_airQualityData.CO.ToString("F1") μg/m³</td>
+                                    </tr>
+                                </tbody>
+                            </MudSimpleTable>
+                        </MudPaper>
+                    </MudItem>
+                }
+            </MudGrid>
+        </MudItem>
+    }
+
+    @if (_forecastData != null && _forecastData.Hours.Count > 0)
+    {
+        <MudItem xs="12">
+            <MudPaper Class="pa-4" Elevation="2">
+                <MudText Typo="Typo.h6" Class="mb-3">
+                    <MudIcon Icon="@Icons.Material.Filled.Timeline" Class="mr-2" />
+                    Previsioni (24h)
+                </MudText>
+                <MudStack Row="true" Spacing="2" Style="overflow-x: auto; padding-bottom: 8px;">
+                    @foreach (var forecast in _forecastData.Hours.Take(8))
+                    {
+                        <MudPaper Class="pa-3" Style="min-width: 100px; text-align: center;" Elevation="1">
+                            <MudText Typo="Typo.caption">@forecast.Date.ToString("HH:mm")</MudText>
+                            <MudText Typo="Typo.h6">@forecast.Temperature.ToString("F0")°</MudText>
+                            <MudText Typo="Typo.caption">@forecast.Description</MudText>
+                        </MudPaper>
+                    }
+                </MudStack>
+            </MudPaper>
+        </MudItem>
+    }
+</MudGrid>
+
+@code {
+    private string _mapElementId = $"map_{Guid.NewGuid():N}";
+    private Location? _selectedLocation;
+    private WeatherData? _weatherData;
+    private AirQualityData? _airQualityData;
+    private HourlyForecast? _forecastData;
+    private bool _showAqiLayer;
+    private bool _showTempLayer;
+    private bool _showPrecipLayer;
+    private bool _isLoading;
+    private IJSObjectReference? _mapModule;
+    private DotNetObjectReference<Home>? _dotNetHelper;
+
+    [Inject]
+    private IOpenWeatherMapService WeatherService { get; set; } = null!;
+
+    [Inject]
+    private IAirQualityService AirQualityService { get; set; } = null!;
+
+    [Inject]
+    private IGeocodingService GeocodingService { get; set; } = null!;
+
+    [Inject]
+    private IFavoriteService FavoriteService { get; set; } = null!;
+
+    [Inject]
+    private ISnackbar Snackbar { get; set; } = null!;
+
+    [Inject]
+    private IJSRuntime JS { get; set; } = null!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await InitializeMap();
+    }
+
+    private async Task InitializeMap()
+    {
+        _mapModule = await JS.InvokeAsync<IJSObjectReference>("import", "./js/leaflet-map.js");
+        _dotNetHelper = DotNetObjectReference.Create(this);
+        await _mapModule.InvokeVoidAsync("initMap", _mapElementId, 41.9028, 12.4964, 5);
+        await _mapModule.InvokeVoidAsync("addClickHandler", _mapElementId, _dotNetHelper);
+    }
+
+    [JSInvokable]
+    public async Task OnMapClick(double lat, double lng)
+    {
+        await LoadLocationData(lat, lng);
+    }
+
+    private async Task LoadLocationData(double lat, double lng)
+    {
+        _isLoading = true;
+        try
+        {
+            var weatherTask = WeatherService.GetCurrentWeatherAsync(lat, lng);
+            var aqiTask = AirQualityService.GetCurrentAQIAsync(lat, lng);
+            var forecastTask = WeatherService.GetForecastAsync(lat, lng);
+
+            await Task.WhenAll(weatherTask, aqiTask, forecastTask);
+
+            _weatherData = weatherTask.Result;
+            _airQualityData = aqiTask.Result;
+            _forecastData = forecastTask.Result;
+
+            _selectedLocation = new Location
+            {
+                Name = $"Lat: {lat:F2}, Lon: {lng:F2}",
+                Country = "",
+                Latitude = lat,
+                Longitude = lng
+            };
+
+            if (_mapModule != null)
+            {
+                await _mapModule.InvokeVoidAsync("addMarker",
+                    _mapElementId, 
+                    lat, 
+                    _selectedLocation.Name,
+                    $"Temp: {_weatherData?.Temperature ?? 0:F1}°C<br/>AQI: {_airQualityData?.Aqi ?? 0}",
+                    GetAqiColor(_airQualityData?.Aqi ?? 0)
+                );
+            }
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+
+    private string LocationToString(Location? loc)
+    {
+        return loc == null ? "" : $"{loc.Name}, {loc.Country}";
+    }
+
+    private async Task<IEnumerable<Location>> SearchCities(string query, CancellationToken cancellationToken)
+    {
+        if (string.IsNullOrWhiteSpace(query) || query.Length < 2)
+            return [];
+
+        var results = await GeocodingService.SearchCitiesAsync(query);
+        return results;
+    }
+
+    private async Task LocateMe()
+    {
+        if (_mapModule == null) return;
+
+        try
+        {
+            var location = await _mapModule.InvokeAsync<LocationResult>("getUserLocation");
+            if (location != null)
+            {
+                await _mapModule.InvokeVoidAsync("setView", _mapElementId, location.Lat, location.Lng, 12);
+                await LoadLocationData(location.Lat, location.Lng);
+            }
+            else
+            {
+                Snackbar.Add("Impossibile ottenere la posizione", Severity.Warning);
+            }
+        }
+        catch
+        {
+            Snackbar.Add("Impossibile ottenere la posizione", Severity.Warning);
+        }
+    }
+
+    private async Task AddToFavorites()
+    {
+        if (_selectedLocation == null) return;
+
+        var result = await FavoriteService.AddAsync(_selectedLocation);
+        if (result != null)
+        {
+            Snackbar.Add("Località salvata nei preferiti!", Severity.Success);
+        }
+        else
+        {
+            Snackbar.Add("Località già nei preferiti", Severity.Info);
+        }
+    }
+
+    private static string GetAqiColor(int aqi)
+    {
+        return aqi switch
+        {
+            <= 50 => "#00e400",
+            <= 100 => "#ffff00",
+            <= 150 => "#ff7e00",
+            <= 200 => "#ff0000",
+            <= 300 => "#8f3f97",
+            _ => "#7e0023"
+        };
+    }
+
+    private static Severity GetAqiSeverity(int aqi)
+    {
+        return aqi switch
+        {
+            <= 50 => Severity.Success,
+            <= 100 => Severity.Warning,
+            <= 150 => Severity.Warning,
+            <= 200 => Severity.Error,
+            <= 300 => Severity.Error,
+            _ => Severity.Error
+        };
+    }
+
+    private class LocationResult
+    {
+        public double Lat { get; set; }
+        public double Lng { get; set; }
+    }
+}
