@@ -1,3 +1,65 @@
-bin
-obj
-appsettings.json
+# .NET
+bin/
+obj/
+*.dll
+*.pdb
+*.exe
+*.cache
+
+# Build results
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+# NuGet
+*.nupkg
+packages/
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# Visual Studio / Rider
+.vs/
+.vscode/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.rsuser
+.idea/
+*.iml
+
+# ASP.NET Core
+appsettings.*.json
+!appsettings.Development.json
+
+# Test results
+TestResults/
+coverage/
+
+# Publish output
+publish/
+wwwroot/lib/
+
+# OS files
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Temporary files
+*.tmp
+*.temp
+*~
+
+# Logs
+*.log
+logs/
