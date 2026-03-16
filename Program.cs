@@ -17,16 +17,16 @@ builder.Services.AddRazorComponents()
 builder.Services.AddMudServices();
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddHttpClient<IOpenWeatherMapService, OpenWeatherMapService>(client =>
 {
     client.BaseAddress = new Uri("https://api.openweathermap.org/");
 });
 
-builder.Services.AddHttpClient<IAirQualityService, AirQualityService>(client =>
+builder.Services.AddHttpClient<IAirQualityService, OpenAQService>(client =>
 {
-    client.BaseAddress = new Uri("https://api.iqair.com/");
+    client.BaseAddress = new Uri("https://api.openaq.org/");
 });
 
 builder.Services.AddHttpClient<IGeocodingService, GeocodingService>(client =>

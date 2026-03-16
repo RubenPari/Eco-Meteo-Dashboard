@@ -28,6 +28,11 @@ artifacts/
 
 # Visual Studio / Rider
 .vs/
+
+# Database
+*.db
+*.db-shm
+*.db-wal
 .vscode/
 *.suo
 *.user
